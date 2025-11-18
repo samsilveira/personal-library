@@ -10,53 +10,53 @@ Este projeto visa desenvolver um sistema de biblioteca digital que funcione a pa
 
 Inicialmente, o projeto está dividido nas seguintes classes:
 
-## Usuário
+## User
 
-Representa o dono da biblioteca. É a classe raiz que possui `Coleção`, de forma pessoal, e `Configuração`, de forma individual, por composição.
-Apresenta como atributos `nome` e `email`.
+Representa o dono da biblioteca. É a classe raiz que possui `Collection`, de forma pessoal, e `Configuration`, de forma individual, por composição.
+Apresenta como atributos `name` e `email`.
 
-## Coleção
+## Collection
 
 Gerencia o acervo completo de publicações do usuário. É responsável por adicionar, remover e buscar publicações em sua lista.
-Apresenta como atributo `publicacoes`, como dicionário.
-Possui como métodos principais `cadastrarPublicacao()`, `listarPublicacoes()`, `removerPublicacao()`, `buscarPorAutor()`, `buscarPorTitulo()`, entre outros.
-Apresenta relação de composição com a classe `Publicação` e é possuída por `Usuário`.
+Apresenta como atributo `publications`, como dicionário.
+Possui como métodos principais `register_publication()`, `list_publications()`, `remove_publication()`, `search_by_author()`, `search_by_title()`, entre outros.
+Apresenta relação de composição com a classe `Publication` e é possuída por `User`.
 
-## Publicação
+## Publication
 
 Contém todas as informações e regras de negócio pertinentes à cada obra. É responsável por gerenciar seu próprio estado interno.
-Tem como atributos `titulo`, `autor`, `ano`, `genero`, `status`, `dataInicioLeitura`, `avaliacao`, dentre outros.
-Seus métodos principais são `iniciarLeitura()`, `finalizarLeitura()`, `avaliarPublicacao()`, `adicionarAnotacao()`, entre outros.
-Possui relação de composição com a classe `Anotacao` e é possuído por `Coleção`.
+Tem como atributos `title`, `author`, `year`, `genre`, `status`, `start_reading_date`, `rating`, dentre outros.
+Seus métodos principais são `start_reading()`, `finish_reading()`, `rate_publication()`, `add_annotation()`, entre outros.
+Possui relação de composição com a classe `Annotation` e é possuída por `Collection`.
 
-### Livro
+### Book
 
-É especialização de Publicação.
+É especialização de Publication.
 Apresenta como atributo o `ISBN`.
 
-### Revista Digital
+### DigitalMagazine
 
-É especialização de Publicação.
+É especialização de Publication.
 Apresenta como atributo o `ISSN`.
 
-## Anotação
+## Annotation
 
 Representa um registro de texto associado a uma publicação. Seu ciclo de vida depende 100% da publicação que está associada.
-Seus atributos são `dataAnotacao`, `trechoReferencia` e `texto`.
-É possuída por `Publicação`.
+Seus atributos são `annotation_date`, `reference_excerpt` e `text`.
+É possuída por `Publication`.
 
-## Configuração
+## Configuration
 
 Armazena as preferências e metas do usuário, facilitando o carregamento e salvamento a partir de um `settings.json`.
-Tem como atributos `metaAnual`, `limiteLeiturasSimultaneas` e `generoFavorito`.
-Seus métodos são `carregar()` e `salvar()`.
-É possuído por `Usuário`.
+Tem como atributos `annual_goal`, `simultaneous_reading_limit` e `favorite_genre`.
+Seus métodos são `load_configurations()` e `save_configurations()`.
+É possuído por `User`.
 
-## Relatório
+## Report
 
 Classe de serviço stateless responsável por processar dados e gerar métricas.
-Seus métodos são `verificarTotalDePublicacoes()`, `verificarPublicacoesPorStatus()`, dentre outros.
-Depende de `Coleção` para receber os dados, mas não a armazena.
+Seus métodos são `check_total_publications()`, `check_publications_by_status()`, dentre outros.
+Depende de `Collection` para receber os dados, mas não a armazena.
 
 # Diagrama UML
 
@@ -67,86 +67,86 @@ title: Diagrama UML - Biblioteca Pessoal Digital
 classDiagram
 	direction LR
 	
-	`Coleção` *-- "N" `Publicação` : contém
-	`Publicação` <|-- Livro
-	`Publicação` <|-- Revista
-	`Publicação` *-- "N" `Anotação` : contém
-	`Usuário` *-- "1" `Coleção` : possui
-	`Usuário` *-- "1" `Configuração` : possui
-	`Relatório` ..> `Coleção` : usa
+	`Collection` *-- "N" `Publication` : contains
+	`Publication` <|-- Book
+	`Publication` <|-- Magazine
+	`Publication` *-- "N" `Annotation` : contains
+	`User` *-- "1" `Collection` : owns
+	`User` *-- "1" `Configuration` : owns
+	`Report` ..> `Collection` : uses
 
-	class `Coleção`{
-		publicacoes: dict
-		cadastrarPublicacao(publicacao: Publicação) bool
-		listarPublicacoes()
-		removerPublicacao(id: str) bool
-		buscarPorAutor(autor: str) list
-		buscarPorTitulo()
-		buscarPorStatus()
-		filtarPorPeriodoDeLeitura()
-        iniciarLeituraPublicacao(id, configuracao) bool
+	class `Collection`{
+		publications: dict
+		register_publication(publication: Publication) bool
+		list_publications()
+		remove_publication(id: str) bool
+		search_by_author(author: str) list
+		search_by_title()
+		search_by_status()
+		filter_by_reading_period()
+	    start_publication_reading(id, configuration) bool
 	}
 	
-	class `Publicação` {
+	class `Publication` {
 		<<Abstract>>
 		id
-		titulo
-		autor
-		editora
-		ano
-		genero
-		numeroDePaginas
-		tipo
-		caminhoArquivo
+		title
+		author
+		publisher
+		year
+		genre
+		number_of_pages
+		type
+		file_path
 		status
-		dataInicioLeitura
-		dataTerminoLeitura
-		avaliacao
-		dataInclusaoAvaliacao
-        anotacoes: list
-		iniciarLeitura()
-		finalizarLeitura()
-		avaliarPublicacao(nota: int) void
-		adicionarAnotacao(anotacao: Anotação) void
-		listarAnotacoes()
-		removerAnotacao()
+		start_reading_date
+		end_reading_date
+		rating
+		rating_inclusion_date
+	       annotations: list
+		start_reading()
+		finish_reading()
+		rate_publication(score: int) void
+		add_annotation(annotation: Annotation) void
+		list_annotations()
+		remove_annotation()
 	}
 	
-	class Livro{
+	class Book{
 		ISBN
 	}
 	
-	class Revista{
+	class Magazine{
 		ISSN
 	}
 	
-	class `Anotação`{
-		idAnotacao
-		dataAnotacao
-		trechoReferencia
-		texto
+	class `Annotation`{
+		annotation_id
+		annotation_date
+		reference_excerpt
+		text
 	}
 	
-	class `Relatório` {
+	class `Report` {
 		<<Service>>
-		verificarTotalDePublicacoes(colecao: Coleção) int
-		verificarPublicacoesPorStatus(colecao: Coleção) dict
-		calcularMediaAvaliacoes()
-		verificarTop5Publicacoes()
-        verificarProgressoMeta(colecao, configuracao) float
+		check_total_publications(collection: Collection) int
+		check_publications_by_status(collection: Collection) dict
+		calculate_average_ratings()
+		check_top_5_publications()
+	       check_goal_progress(collection, configuration) float
 	}
 	
-	class `Usuário` {
-		nome
-		email		
+	class `User` {
+		name
+		email
 	}
 	
-	class `Configuração` {
-		metaAnual
-		limiteLeiturasSimultaneas
-		generoFavorito
-		carregarConfiguracoes()
-		salvarConfiguracoes()
+	class `Configuration` {
+		annual_goal
+		simultaneous_reading_limit
+		favorite_genre
+		load_configurations()
+		save_configurations()
 	}
 
 ```
