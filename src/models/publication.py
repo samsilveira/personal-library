@@ -185,6 +185,11 @@ class Publication(ABC):
         self.__status = "READ"
         self._end_read_date = date.today()
 
+    @property
+    def end_read_date(self):
+        """Get end reading date."""
+        return self._end_read_date
+
     def rate_publication(self, rating_value: float):
         """
         Registers a rating for the publication.
