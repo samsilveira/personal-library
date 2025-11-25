@@ -86,7 +86,7 @@ class Collection:
         Returns:
             List of publications by the specified author
         """
-        pass
+        return [pub for pub in self._publications.values() if author.lower() in pub.author.lower()]
               
     def search_by_title(self, title: str) -> List[Publication]:
         """
@@ -98,6 +98,7 @@ class Collection:
         Returns:
             List of publications matching the title
         """
+        return [pub for pub in self._publications.values() if title.lower() in pub.title.lower()]
         pass
 
     def search_by_status(self, status: str) -> List[Publication]:
@@ -105,11 +106,12 @@ class Collection:
         Search publication by reading status.
 
         Args:
-            status: Status to filter by (NOT_READ, READING, READ)
+            status: Status to filter by (UNREAD, READING, READ)
 
         Returns:
             List of publications with the specified status
         """
+        return [pub for pub in self._publications.values() if status.upper() == pub.status]
         pass
 
     def filter_by_reading_period(self, start_date: date, end_date: date) -> List[Publication]:
@@ -123,9 +125,10 @@ class Collection:
         Returns:
             List of publications read during the specified period
         """
-        pass
+        return [pub for pub in self._publications.values() if pub.status == "READ" and start_date <= pub.end_read_date <= end_date]
 
-    def start_publication_reading(self, id: int, configuration: Configuration) -> bool:
+
+    def start_publication_reading(self, publication_id: int, configuration: Configuration) -> bool:
         """
         Start reading a publication.
 
@@ -139,8 +142,21 @@ class Collection:
             True if reading started sucessfully, False otherwise
 
         Raises:
-            ValueError: If simultaneous reading limit is reached
+            ValueError: If publication not found or simultaneous reading limit is reached
         """
-        pass
+
+        # 1. Encontrar a publicação pelo ID
+        if publication_id not in self._publications:
+            raise ValueError(f"Publication with ID {publication_id} not found.")
+        
+        simultaneous_reading = len(self.search_by_status("READING"))
+
+        if simultaneous_reading >= configuration.simultaneous_reading_limit:
+            raise ValueError("Maximum number of simultaneous readings reached.")
+        
+        self._publications[publication_id].start_reading()
+        
+        return True
+        
 
     
