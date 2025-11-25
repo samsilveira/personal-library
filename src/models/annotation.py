@@ -51,3 +51,13 @@ class Annotation:
         if not value or not value.strip():
             raise ValueError("Text cannot be empty")
         self._text = value.strip()
+
+    @property
+    def date(self):
+        """Get annotation date."""
+        return self._date
+    
+    @property
+    def reference_excerpt(self):
+        """Get reference excerpt."""
+        return self._reference_excerpt
