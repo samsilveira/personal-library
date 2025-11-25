@@ -14,14 +14,14 @@ class Collection:
     Responsible for adding, removing, searching publications and enforcing business rules related to the collection as a whole.
 
     Attributes:
-        publications (Dict[str, Publication]): Dictionary of publications indexed by ID
+        publications (Dict[int, Publication]): Dictionary of publications indexed by ID
     """
 
     def __init__(self):
         """
         Initialize an empty collection.
         """
-        pass
+        self._publications = {}
 
     def register_publication(self, publication: Publication) -> bool:
         """
@@ -36,9 +36,21 @@ class Collection:
             True if sucessfully registerd, False otherwise
 
         Raises:
+            TypeError: If publication is not a Publication object
             ValueError: If publication with same title and author already exists
         """
-        pass
+        if not isinstance(publication, Publication):
+            raise TypeError("Must provide a Publication instance")
+
+        if publication.id in self._publications:
+            raise ValueError(f"Publication with ID {publication.id} already exists.")
+        
+        for existing_pub in self._publications.values():
+            if existing_pub == publication:
+                raise ValueError("Publication with same title and author already exists.")
+            
+        self._publications[publication.id] = publication
+        return True
 
     def list_publications(self) -> list[Publication]:
         """
@@ -47,9 +59,9 @@ class Collection:
         Returns:
             List of all Publication objects
         """
-        pass
+        return list(self._publications.values())
 
-    def remove_publication(self, publication_id: str) -> bool:
+    def remove_publication(self, publication_id: int) -> bool:
         """
         Remove a publication from the collection.
 
@@ -59,7 +71,10 @@ class Collection:
         Returns:
             True if sucessfully remove, False if not found 
         """
-        pass
+        if publication_id in self._publications:
+            del self._publications[publication_id]
+            return True
+        return False
 
     def search_by_author(self, author: str) -> List[Publication]:
         """
@@ -110,7 +125,7 @@ class Collection:
         """
         pass
 
-    def start_publication_reading(self, id: str, configuration: Configuration) -> bool:
+    def start_publication_reading(self, id: int, configuration: Configuration) -> bool:
         """
         Start reading a publication.
 
