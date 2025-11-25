@@ -3,8 +3,9 @@ Module containing the Publication class and its specializations.
 """
 
 from datetime import date
+from abc import ABC
 
-class Publication:
+class Publication(ABC):
     """
     Abstract class representing a publication in the library.
 
@@ -65,6 +66,22 @@ class Publication:
         self._rating_inclusion_date = None
         self._annotations = []
 
+    def __str__(self):
+        return f"[{self.id}] {self.title} - {self._author}"
+    
+    def __repr__(self):
+        return f"Publication(id={self.id}, title='{self.title}', year={self.year}, author='{self.author}', status='{self.status}')"
+    
+    def __eq__(self, other):
+        if not isinstance(other, Publication):
+            return False
+        return self.title == other.title and self.author == other.author
+    
+    def __lt__(self, other):
+        if not isinstance(other, Publication):
+            return NotImplemented    
+        return self.year < other.year
+
     @property
     def id(self):
         """Get publication ID."""
@@ -94,6 +111,16 @@ class Publication:
             raise ValueError("Year must be greater then or equal to 1500")
         
         self._year = value
+
+    @property
+    def author(self):
+        """Get publication's author."""
+        return self._author
+    
+    @property
+    def publisher(self):
+        """Get publication's publisher."""
+        return self._publisher
 
     @property
     def status(self):
@@ -193,11 +220,49 @@ class Book(Publication):
 
     Attributes:
         isbn (str): ISBN code of the book
+        edition (int): Edition number
     """
 
-    def __init__(self):
+    def __init__(self,
+        pub_id, 
+        title, 
+        author, 
+        publisher,
+        year, 
+        genre, 
+        number_of_pages, 
+        file_path="", 
+        isbn="",
+        edition=1
+    ):
         """Initializes a new book."""
-        super().__init__()
+        super().__init__(
+            pub_id=pub_id, 
+            title=title, 
+            author=author, 
+            publisher=publisher, 
+            year=year, 
+            genre=genre,
+            number_of_pages=number_of_pages,
+            pub_type="Book",
+            file_path=file_path
+        )
+
+        self._isbn = isbn
+        self._edition = edition
+
+    @property
+    def isbn(self):
+        """Get the book's ISBN."""
+        return self._isbn
+    
+    @property
+    def edition(self):
+        """Get the book's edition."""
+        return self._edition
+    
+    def __str__(self):
+        return f"[{self.id}] {self.title} - {self._author} (ISBN: {self.isbn})"
 
 class Magazine(Publication):
     """
@@ -207,9 +272,42 @@ class Magazine(Publication):
 
     Attributes:
         issn (str): ISSN code of the magazine
+        issue_number (int): Magazine issue/edition number
     """
 
-    def __init__(self):
+    def __init__(self,
+        pub_id, 
+        title, 
+        author, 
+        publisher, 
+        year, 
+        genre, 
+        number_of_pages, 
+        issue_number,
+        file_path="", 
+        issn=""
+    ):
         """Initializes a new magazine."""
-        super().__init__()
+        super().__init__(
+            pub_id=pub_id,
+            title=title,
+            author=author,
+            publisher=publisher,
+            year=year,
+            genre=genre,
+            number_of_pages=number_of_pages,
+            pub_type="Magazine",
+            file_path=file_path
+        )
+
+        self._issn = issn
+        self._issue_number = issue_number
+
+    @property
+    def issn(self):
+        return self._issn
+    
+    @property
+    def issue_number(self):
+        return self._issue_number
 
