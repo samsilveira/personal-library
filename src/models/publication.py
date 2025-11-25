@@ -4,6 +4,7 @@ Module containing the Publication class and its specializations.
 
 from datetime import date
 from abc import ABC
+from .annotation import Annotation
 
 class Publication(ABC):
     """
@@ -207,23 +208,29 @@ class Publication(ABC):
         self.__rating = rating_value
         self._rating_inclusion_date = date.today()
 
-    def add_annotation(self, annotation):
+    def add_annotation(self, annotation: Annotation) -> None:
         """
         Adds a note to the publication.
 
         Args:
             annotation: Annotation object to be added
+
+        Raises:
+            TypeError: If the parameter is not an Annotation instance.
         """
-        pass
+        if not isinstance(annotation, Annotation):
+            raise TypeError("The annotation must be an Annotation instance")
+        
+        self._annotations.append(annotation)
 
     def list_annotations(self):
         """
         Returns all annotations of the publication.
 
         Returns:
-            List of Annotation objects
+            List of Annotation objects (Shallow copy)
         """
-        pass
+        return self._annotations[:]
 
     def remove_annotation(self, annotation_id: str):
         """
@@ -235,7 +242,11 @@ class Publication(ABC):
         Returns:
             True if successfully removed, False otherwise
         """
-        pass
+        for annotation in self._annotations:
+            if annotation.id == annotation_id:
+                self._annotations.remove(annotation)
+                return True
+        return False
 
 class Book(Publication):
     """
