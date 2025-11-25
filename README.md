@@ -6,6 +6,57 @@ Atividade prática da disciplina de Programação Orientada à Objetos (ES0008) 
 
 Este projeto visa desenvolver um sistema de biblioteca digital que funcione a partir de linha de comando ou através de uma API simples, de forma a aprender e praticar a Programação Orientada à Objetos.
 
+## Estrutura do Projeto
+
+O projeto segue uma organização modular e bem definida, separando responsabilidades em diferentes diretórios:
+
+```text
+biblioteca_pessoal_digital/
+├── docs/                          # Documentação complementar
+│   └── uml.md                     # Diagramas UML detalhados
+├── src/                           # Código fonte principal
+│   ├── __init__.py
+│   ├── api/                       # Camada de API REST
+│   │   └── __init__.py
+│   ├── cli/                       # Interface de linha de comando
+│   │   ├── __init__.py
+│   │   └── main.py                # Ponto de entrada da aplicação CLI
+│   ├── data/                      # Camada de persistência de dados
+│   │   ├── __init__.py
+│   │   ├── database.py            # Gerenciamento de banco de dados
+│   │   └── repository.py          # Padrão Repository para acesso aos dados
+│   └── models/                    # Modelos de domínio (classes principais)
+│       ├── __init__.py
+│       ├── annotation.py          # Classe Annotation
+│       ├── collection.py          # Classe Collection
+│       ├── configuration.py       # Classe Configuration
+│       ├── publication.py         # Classes Publication, Book e Magazine
+│       ├── report.py              # Classe Report
+│       └── user.py                # Classe User
+├── tests/                         # Testes unitários e de integração
+│   └── __init__.py
+├── .gitignore                     # Arquivos ignorados pelo Git
+├── README.md                      # Documentação e instruções de execução
+├── requirements.txt               # Dependências do projeto
+└── settings.json                  # Arquivo de configurações do usuário
+```
+
+### Descrição dos Diretórios
+
+- **`docs/`**: Contém documentação adicional do projeto, incluindo diagramas UML e especificações técnicas.
+- **`src/`**: Diretório principal do código fonte, organizado em módulos específicos:
+  - **`api/`**: Implementação da interface REST API para acesso externo ao sistema.
+  - **`cli/`**: Interface de linha de comando, principal forma de interação com o usuário.
+  - **`data/`**: Responsável pela persistência e recuperação de dados, implementando o padrão Repository.
+  - **`models/`**: Contém todas as classes de domínio que representam as entidades do sistema.
+- **`tests/`**: Suite de testes para garantir a qualidade e funcionamento correto do código.
+
+### Arquivos de Configuração
+
+- **`requirements.txt`**: Lista todas as dependências Python necessárias para o projeto.
+- **`settings.json`**: Armazena as configurações personalizadas do usuário (metas, preferências, etc.).
+- **`.gitignore`**: Define quais arquivos e diretórios devem ser ignorados pelo controle de versão.
+
 ## Estrutura de Classes
 
 Inicialmente, o projeto está dividido nas seguintes classes:
