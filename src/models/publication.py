@@ -12,7 +12,7 @@ class Publication(ABC):
     Responsible for managing information and status of a publication, including bibliographic data, reading status, rating, and annotations.
 
     Attributes:
-        id (str): Unique identifier of the publication
+        id (int): Unique identifier of the publication
         title (str): Title of the publication
         author (str): Author's name
         publisher (str): Publisher's name
@@ -30,18 +30,34 @@ class Publication(ABC):
         
     """
 
-    def __init__(self, 
-        pub_id: int, 
-        title: str, 
-        author: str, 
-        publisher: str, 
-        year: int, 
-        genre: str, 
+    def __init__(self,
+        pub_id: int,
+        title: str,
+        author: str,
+        publisher: str,
+        year: int,
+        genre: str,
         number_of_pages: int,
         pub_type: str,
         file_path: str = ""
     ):
-        """Initializes a new publication."""
+        """
+        Initializes a new publication.
+        
+        Args:
+            pub_id: Unique identifier (must be positive integer)
+            title: Title of the publication (cannot be empty)
+            author: Author's name
+            publisher: Publisher's name
+            year: Year of publication (must be >= 1500)
+            genre: Literary genre
+            number_of_pages: Number of pages
+            pub_type: Type of publication (Book/Magazine)
+            file_path: Path to the digital file (optional)
+            
+        Raises:
+            ValueError: If pub_id is not a positive integer, title is empty, or year < 1500
+        """
         if not isinstance(pub_id, int) or pub_id <= 0:
             raise ValueError("ID must be a positive integer")
         self.__id = pub_id
@@ -67,19 +83,23 @@ class Publication(ABC):
         self._annotations = []
 
     def __str__(self):
+        """Returns a string representation of the publication."""
         return f"[{self.id}] {self.title} - {self._author}"
     
     def __repr__(self):
+        """Returns a detailed representation of the publication for debugging."""
         return f"Publication(id={self.id}, title='{self.title}', year={self.year}, author='{self.author}', status='{self.status}')"
     
     def __eq__(self, other):
+        """Checks equality based on title and author."""
         if not isinstance(other, Publication):
             return False
         return self.title == other.title and self.author == other.author
     
     def __lt__(self, other):
+        """Compares publications by year for sorting."""
         if not isinstance(other, Publication):
-            return NotImplemented    
+            return NotImplemented
         return self.year < other.year
 
     @property
@@ -132,6 +152,10 @@ class Publication(ABC):
         Starts reading the publication.
         
         Updates the status to READING and registers the start date.
+        If publication was already READ, resets rating and end date.
+        
+        Raises:
+            ValueError: If publication already has READING status.
         """
         if self.__status == "READING":
             raise ValueError("Publication already has READING status")
@@ -165,9 +189,10 @@ class Publication(ABC):
         Registers a rating for the publication.
 
         Args:
-            rating: Value between 0 and 10
+            rating_value: Value between 0 and 10
 
         Raises:
+            TypeError: If rating_value is not int or float.
             ValueError: If status is not READ or rating is invalid.
         """
         if not isinstance(rating_value, (int, float)):
@@ -224,18 +249,32 @@ class Book(Publication):
     """
 
     def __init__(self,
-        pub_id, 
-        title, 
-        author, 
+        pub_id,
+        title,
+        author,
         publisher,
-        year, 
-        genre, 
-        number_of_pages, 
-        file_path="", 
+        year,
+        genre,
+        number_of_pages,
+        file_path="",
         isbn="",
         edition=1
     ):
-        """Initializes a new book."""
+        """
+        Initializes a new book.
+        
+        Args:
+            pub_id: Unique identifier
+            title: Book title
+            author: Author's name
+            publisher: Publisher's name
+            year: Year of publication
+            genre: Literary genre
+            number_of_pages: Number of pages
+            file_path: Path to the digital file (optional)
+            isbn: ISBN code (optional)
+            edition: Edition number (default: 1)
+        """
         super().__init__(
             pub_id=pub_id, 
             title=title, 
@@ -262,6 +301,7 @@ class Book(Publication):
         return self._edition
     
     def __str__(self):
+        """Returns a string representation of the book including ISBN."""
         return f"[{self.id}] {self.title} - {self._author} (ISBN: {self.isbn})"
 
 class Magazine(Publication):
@@ -276,18 +316,32 @@ class Magazine(Publication):
     """
 
     def __init__(self,
-        pub_id, 
-        title, 
-        author, 
-        publisher, 
-        year, 
-        genre, 
-        number_of_pages, 
+        pub_id,
+        title,
+        author,
+        publisher,
+        year,
+        genre,
+        number_of_pages,
         issue_number,
-        file_path="", 
+        file_path="",
         issn=""
     ):
-        """Initializes a new magazine."""
+        """
+        Initializes a new magazine.
+        
+        Args:
+            pub_id: Unique identifier
+            title: Magazine title
+            author: Author's name
+            publisher: Publisher's name
+            year: Year of publication
+            genre: Genre/category
+            number_of_pages: Number of pages
+            issue_number: Magazine issue/edition number
+            file_path: Path to the digital file (optional)
+            issn: ISSN code (optional)
+        """
         super().__init__(
             pub_id=pub_id,
             title=title,
@@ -305,9 +359,11 @@ class Magazine(Publication):
 
     @property
     def issn(self):
+        """Get the magazine's ISSN."""
         return self._issn
     
     @property
     def issue_number(self):
+        """Get the magazine's issue number."""
         return self._issue_number
 
