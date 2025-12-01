@@ -21,5 +21,11 @@ class User:
             name: User's name
             email: User's email address
         """
-        self.name = name
+        if not name or not name.strip():
+            raise ValueError("Name cannot be empty")
+        self.name = name.strip()
         self.email = email
+
+    def __str__(self):
+        """Returns a string representation of the publication."""
+        return f"User: {self.name} ({self.email})"
