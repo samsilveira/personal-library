@@ -5,6 +5,7 @@ Module containing the Publication class and its specializations.
 from datetime import date
 from abc import ABC
 from .annotation import Annotation
+from .mixins import DigitalAsset
 
 class Publication(ABC):
     """
@@ -21,7 +22,6 @@ class Publication(ABC):
         genre (str): Literary genre
         number_of_pages (int): Number of pages
         type (str): Type of publication (Book/Magazine)
-        file_path (str): Path to the digital file
         status (str): Current status (UNREAD, READING, READ)
         start_read_date (Optional[date]): Start date of reading
         end_read_date (Optional[date]): End date of reading
@@ -39,8 +39,7 @@ class Publication(ABC):
         year: int,
         genre: str,
         number_of_pages: int,
-        pub_type: str,
-        file_path: str = ""
+        pub_type: str
     ):
         """
         Initializes a new publication.
@@ -54,7 +53,6 @@ class Publication(ABC):
             genre: Literary genre
             number_of_pages: Number of pages
             pub_type: Type of publication (Book/Magazine)
-            file_path: Path to the digital file (optional)
             
         Raises:
             ValueError: If pub_id is not a positive integer, title is empty, or year < 1500
@@ -63,10 +61,8 @@ class Publication(ABC):
             raise ValueError("ID must be a positive integer")
         self.__id = pub_id
 
-        self._title = None
         self.title = title       
-        
-        self._year = None
+
         self.year = year
         
         self._author = author
@@ -74,7 +70,6 @@ class Publication(ABC):
         self._genre = genre
         self._number_of_pages = number_of_pages
         self._pub_type = pub_type
-        self._file_path = file_path
         
         self.__status = "UNREAD"
         self._start_read_date = None
@@ -147,6 +142,11 @@ class Publication(ABC):
     def status(self):
         """Get publication's reading status."""
         return self.__status
+    
+    @property
+    def rating(self):
+        """Get publication's rating."""
+        return self.__rating
 
     def start_reading(self):
         """
@@ -253,7 +253,7 @@ class Publication(ABC):
                 return True
         return False
 
-class Book(Publication):
+class Book(DigitalAsset, Publication):
     """
     Represents a book in the library.
 
@@ -292,6 +292,7 @@ class Book(Publication):
             edition: Edition number (default: 1)
         """
         super().__init__(
+            file_path=file_path,
             pub_id=pub_id, 
             title=title, 
             author=author, 
@@ -299,8 +300,7 @@ class Book(Publication):
             year=year, 
             genre=genre,
             number_of_pages=number_of_pages,
-            pub_type="Book",
-            file_path=file_path
+            pub_type="Book"
         )
 
         self._isbn = isbn
@@ -320,7 +320,7 @@ class Book(Publication):
         """Returns a string representation of the book including ISBN."""
         return f"[{self.id}] {self.title} - {self._author} (ISBN: {self.isbn})"
 
-class Magazine(Publication):
+class Magazine(DigitalAsset, Publication):
     """
     Represents a magazine in the library.
 
@@ -359,6 +359,7 @@ class Magazine(Publication):
             issn: ISSN code (optional)
         """
         super().__init__(
+            file_path=file_path,
             pub_id=pub_id,
             title=title,
             author=author,
@@ -366,8 +367,7 @@ class Magazine(Publication):
             year=year,
             genre=genre,
             number_of_pages=number_of_pages,
-            pub_type="Magazine",
-            file_path=file_path
+            pub_type="Magazine"
         )
 
         self._issn = issn
