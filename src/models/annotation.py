@@ -9,12 +9,12 @@ class Annotation:
     """
     Represents a text note associated with a publication.
 
-    Annotations are completely dependent on their parent publications's lifecycle.
+    Annotations are completely dependent on their parent publication's lifecycle.
 
     Attributes:
         id (str): Unique identifier for the annotation
 		date (date): Date when the annotation was created
-		reference_excerpt (Optional[str]): Text excerpt being refenced
+		reference_excerpt (Optional[str]): Text excerpt being referenced
 		text (str): The annotation content itself
     """
 

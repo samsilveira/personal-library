@@ -6,7 +6,7 @@ from pathlib import Path
 
 class DigitalAsset():
     """
-    Mixin that adds digital file capabilites to a class.
+    Mixin that adds digital file capabilities to a class.
 
     Provides file path management and validation for digital publications.
 
@@ -16,7 +16,7 @@ class DigitalAsset():
 
     def __init__(self, file_path: str = "", **kwargs):
         """
-        Initalize digital asset capabilities.
+        Initialize digital asset capabilities.
 
         Args:
             file_path: Path to the digital file (optional)

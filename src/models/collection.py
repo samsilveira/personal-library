@@ -33,7 +33,7 @@ class Collection:
             publication: Publication object to be added
 
         Returns:
-            True if sucessfully registerd, False otherwise
+            True if successfully registered, False otherwise
 
         Raises:
             TypeError: If publication is not a Publication object
@@ -69,7 +69,7 @@ class Collection:
             publication_id: ID of the publication to remove
 
         Returns:
-            True if sucessfully remove, False if not found 
+            True if successfully removed, False if not found 
         """
         if publication_id in self._publications:
             del self._publications[publication_id]
@@ -137,7 +137,7 @@ class Collection:
             configuration: Configuration object with reading limits
 
         Returns:
-            True if reading started sucessfully, False otherwise
+            True if reading started successfully, False otherwise
 
         Raises:
             ValueError: If publication not found or simultaneous reading limit is reached

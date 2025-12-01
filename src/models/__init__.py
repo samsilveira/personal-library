@@ -1,5 +1,5 @@
 """
-Models package containing all domain class.
+Models package containing all domain classes.
 """
 
 from .user import User

@@ -124,7 +124,7 @@ class Publication(ABC):
     def year(self, value: int):
         """Set publication year with validation."""
         if value < 1500:
-            raise ValueError("Year must be greater then or equal to 1500")
+            raise ValueError("Year must be greater than or equal to 1500")
         
         self._year = value
 
@@ -186,6 +186,11 @@ class Publication(ABC):
         self._end_read_date = date.today()
 
     @property
+    def start_read_date(self):
+        """Get start reading date."""
+        return self._start_read_date
+    
+    @property
     def end_read_date(self):
         """Get end reading date."""
         return self._end_read_date
@@ -202,7 +207,7 @@ class Publication(ABC):
             ValueError: If status is not READ or rating is invalid.
         """
         if not isinstance(rating_value, (int, float)):
-            raise TypeError("The evaluation must of int or float type")
+            raise TypeError("The evaluation must be of int or float type")
         
         if self.__status != "READ":
             raise ValueError("Publication cannot be evaluated without finishing reading")
