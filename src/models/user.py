@@ -21,4 +21,5 @@ class User:
             name: User's name
             email: User's email address
         """
-        pass
+        self.name = name
+        self.email = email
