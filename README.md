@@ -30,6 +30,7 @@ biblioteca_pessoal_digital/
 │       ├── annotation.py          # Classe Annotation
 │       ├── collection.py          # Classe Collection
 │       ├── configuration.py       # Classe Configuration
+│       ├── mixin.py               # Classe DigitalAsset
 │       ├── publication.py         # Classes Publication, Book e Magazine
 │       ├── report.py              # Classe Report
 │       └── user.py                # Classe User
