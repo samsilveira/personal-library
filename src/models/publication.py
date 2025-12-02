@@ -258,7 +258,7 @@ class Publication(ABC):
                 return True
         return False
 
-class Book(DigitalAsset, Publication):
+class Book(Publication, DigitalAsset):
     """
     Represents a book in the library.
 
@@ -277,9 +277,9 @@ class Book(DigitalAsset, Publication):
         year,
         genre,
         number_of_pages,
-        file_path="",
         isbn="",
-        edition=1
+        edition=1,
+        file_path=""
     ):
         """
         Initializes a new book.
@@ -296,8 +296,8 @@ class Book(DigitalAsset, Publication):
             isbn: ISBN code (optional)
             edition: Edition number (default: 1)
         """
-        super().__init__(
-            file_path=file_path,
+        Publication.__init__(
+            self,
             pub_id=pub_id, 
             title=title, 
             author=author, 
@@ -306,6 +306,11 @@ class Book(DigitalAsset, Publication):
             genre=genre,
             number_of_pages=number_of_pages,
             pub_type="Book"
+        )
+
+        DigitalAsset.__init__(
+            self,
+            file_path=file_path
         )
 
         self._isbn = isbn
@@ -325,7 +330,7 @@ class Book(DigitalAsset, Publication):
         """Returns a string representation of the book including ISBN."""
         return f"[{self.id}] {self.title} - {self._author} (ISBN: {self.isbn})"
 
-class Magazine(DigitalAsset, Publication):
+class Magazine(Publication, DigitalAsset):
     """
     Represents a magazine in the library.
 
@@ -345,8 +350,8 @@ class Magazine(DigitalAsset, Publication):
         genre,
         number_of_pages,
         issue_number,
-        file_path="",
-        issn=""
+        issn="",
+        file_path=""
     ):
         """
         Initializes a new magazine.
@@ -363,8 +368,8 @@ class Magazine(DigitalAsset, Publication):
             file_path: Path to the digital file (optional)
             issn: ISSN code (optional)
         """
-        super().__init__(
-            file_path=file_path,
+        Publication.__init__(
+            self,
             pub_id=pub_id,
             title=title,
             author=author,
@@ -373,6 +378,11 @@ class Magazine(DigitalAsset, Publication):
             genre=genre,
             number_of_pages=number_of_pages,
             pub_type="Magazine"
+        )
+
+        DigitalAsset.__init__(
+            self,
+            file_path=file_path
         )
 
         self._issn = issn
