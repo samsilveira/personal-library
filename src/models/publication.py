@@ -97,6 +97,53 @@ class Publication(ABC):
         if not isinstance(other, Publication):
             return NotImplemented
         return self.year < other.year
+    
+    def to_dict(self) -> dict:
+        """
+        Convert publication to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary with all publication data
+        """       
+        def date_to_str(d):
+            return d.isoformat() if d else None
+
+        return {
+            "pub_type": self._pub_type,
+            "pub_id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "publisher": self.publisher,
+            "year": self.year,
+            "genre": self._genre,
+            "number_of_pages": self._number_of_pages,
+            "status": self.status,
+            "start_read_date": date_to_str(self.start_read_date),
+            "end_read_date": date_to_str(self.end_read_date),
+            "rating": self.rating,
+            "rating_inclusion_date": date_to_str(self._rating_inclusion_date),
+            "annotations": [ann.to_dict() for ann in self._annotations]
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Publication':
+        """
+        Create appropriate Publication subclass from dictionary.
+
+        Args:
+            data: Dictionary with publication data
+
+        Returns:
+            Book or Magazine instance
+        """
+        pub_type = data.get["type"]
+
+        if pub_type == "Book":
+            return Book.from_dict(data)
+        elif pub_type == "Magazine":
+            return Magazine.from_dict(data)
+        else:
+            raise ValueError(f"Unknown publication type: {pub_type}")
 
     @property
     def id(self):
@@ -184,6 +231,19 @@ class Publication(ABC):
         
         self.__status = "READ"
         self._end_read_date = date.today()
+
+    def _restore_state(self, status, start_date, end_date, rating, rating_date, annotations):
+        """
+        Restore internal state (used during deserialization).
+
+        This is a protected method for internal use during loading from persistence.
+        """
+        self.__status = status
+        self._start_read_date = start_date
+        self._end_read_date = end_date
+        self.__rating = rating
+        self._rating_inclusion_date = rating_date
+        self._annotations = annotations
 
     @property
     def start_read_date(self):
@@ -316,6 +376,49 @@ class Book(Publication, DigitalAsset):
         self._isbn = isbn
         self._edition = edition
 
+    def to_dict(self) -> dict:
+        """Book-specific serialization."""
+        data = super().to_dict()
+
+        data["isbn"] = self.isbn
+        data["edition"] = self.edition
+        data["file_path"] = self.file_path
+        return data
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Book':
+        """Create Book from dictionary."""
+
+        def str_to_date(date_str):
+            return date.fromisoformat(date_str) if date_str else None
+        
+        annotations_data = data.get("annotations", [])
+        annotations = [Annotation.from_dict(ann) for ann in annotations_data]
+        
+        book = cls(
+            pub_id=data["pub_id"],
+            title=data["title"],
+            author=data["author"],
+            publisher=data.get("publisher", ""),
+            year=data["year"],
+            genre=data.get("genre", ""),
+            number_of_pages=data.get("number_of_pages", 0),
+            isbn=data.get("isbn", ""),
+            edition=data.get("edition", 1),
+            file_path=data.get("file_path", "")
+        )
+
+        book._restore_state(
+            status=data.get("status", "UNREAD"),
+            start_date=str_to_date(data.get("start_read_date")),
+            end_date=str_to_date(data.get("end_read_date")),
+            rating=data.get("rating"),
+            rating_date=str_to_date(data.get("rating_inclusion_date")),
+            annotations=annotations
+        )
+        
+        return book
+    
     @property
     def isbn(self):
         """Get the book's ISBN."""
@@ -388,6 +491,49 @@ class Magazine(Publication, DigitalAsset):
         self._issn = issn
         self._issue_number = issue_number
 
+    def to_dict(self) -> dict:
+        """Magazine-specific serialization."""
+        data = super().to_dict()
+
+        data["issn"] = self.issn
+        data["issue_number"] = self.issue_number
+        data["file_path"] = self.file_path
+        return data
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Magazine':
+        """Create Magazine from dictionary."""
+
+        def str_to_date(date_str):
+            return date.fromisoformat(date_str) if date_str else None
+        
+        annotations_data = data.get("annotations", [])
+        annotations = [Annotation.from_dict(ann) for ann in annotations_data]
+
+        magazine = cls(
+            pub_id=data["pub_id"],
+            title=data["title"],
+            author=data["author"],
+            publisher=data.get("publisher", ""),
+            year=data["year"],
+            genre=data.get("genre", ""),
+            number_of_pages=data.get("number_of_pages", 0),
+            issn=data.get("issn", ""),
+            issue_number=data.get("issue_number", 1),
+            file_path=data.get("file_path", "")
+        )
+
+        magazine._restore_state(
+            status=data.get("status", "UNREAD"),
+            start_date=str_to_date(data.get("start_read_date")),
+            end_date=str_to_date(data.get("end_read_date")),
+            rating=data.get("rating"),
+            rating_date=str_to_date(data.get("rating_inclusion_date")),
+            annotations=annotations
+        )
+
+        return magazine
+    
     @property
     def issn(self):
         """Get the magazine's ISSN."""
