@@ -1,0 +1,47 @@
+[
+    {
+        "type": "Book",
+        "pub_id": 1,
+        "title": "1984",
+        "author": "George Orwell",
+        "publisher": "Secker & Warburg",
+        "year": 1949,
+        "genre": "Dystopian Fiction",
+        "number_of_pages": 328,
+        "status": "READ",
+        "start_read_date": "2025-12-02",
+        "end_read_date": "2025-12-02",
+        "rating": 5,
+        "rating_inclusion_date": "2025-12-02",
+        "annotations": [
+            {
+                "id": 1,
+                "text": "Powerful opening",
+                "reference_excerpt": "It was a bright cold day in April...",
+                "date": "2025-12-02"
+            }
+        ],
+        "isbn": "978-0451524935",
+        "edition": 1,
+        "file_path": "/books/1984.pdf"
+    },
+    {
+        "type": "Magazine",
+        "pub_id": 2,
+        "title": "National Geographic",
+        "author": "Various",
+        "publisher": "National Geographic Society",
+        "year": 2024,
+        "genre": "Science",
+        "number_of_pages": 100,
+        "status": "UNREAD",
+        "start_read_date": null,
+        "end_read_date": null,
+        "rating": null,
+        "rating_inclusion_date": null,
+        "annotations": [],
+        "issn": "0027-9358",
+        "issue_number": 12,
+        "file_path": "/magazines/natgeo_dec2024.pdf"
+    }
+]
