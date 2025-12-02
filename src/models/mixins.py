@@ -38,9 +38,7 @@ class DigitalAsset():
         Returns:
             True if file_path is not empty, False otherwise
         """
-        if self.file_path != "":
-            return True
-        return False
+        return bool(self.file_path and self.file_path.strip())
 
     def validate_file_exists(self) -> bool:
         """
