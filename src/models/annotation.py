@@ -36,6 +36,40 @@ class Annotation:
     def __str__(self):
         excerpt = f" [Ref.: {self._reference_excerpt[:30]}...]" if self._reference_excerpt else ""
         return f"[{self._date}]{excerpt} {self._text[:50]}..."
+    
+    def to_dict(self) -> dict:
+        """Convert annotation to dictionary for JSON serialization."""
+        return {
+            "id": self.id,
+            "text": self.text,
+            "reference_excerpt": self.reference_excerpt,
+            "date": self.date.isoformat() if self.date else None
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Annotation':
+        """
+        Create an Annotation from a dictionary.
+
+        Args:
+            data: Dictionary with annotation data
+
+        Returns:
+            Annotation instance
+        """
+
+        annotation = cls(
+            annotation_id=data["id"],
+            text=data["text"],
+            reference_excerpt=data.get["reference_excerpt"]
+        )
+
+        if data.get["date"]:
+            annotation._date = date.fromisoformat(data["date"])
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Annotation':
+        pass
 
     @property
     def id(self):
