@@ -104,3 +104,35 @@ def test_finish_reading(sample_book):
 
     assert sample_book.status == "READ"
     assert sample_book.end_read_date is not None
+
+def test_add_rating(sample_book):
+    """Test adding a rating to a book."""
+    sample_book.start_reading()
+    sample_book.finish_reading()
+
+    sample_book.rate_publication(4.5)
+
+    assert sample_book.rating == 4.5
+
+def test_invalid_rating_range(sample_book):
+    """Test adding a invalid rating to a book."""
+    sample_book.start_reading()
+    sample_book.finish_reading()
+
+    with pytest.raises(ValueError):
+        sample_book.rate_publication(11)
+
+    with pytest.raises(ValueError):
+        sample_book.rate_publication(-1)
+
+def test_cannot_rate_unfinished_book(sample_book):
+    """Test adding a invalid rating to a book."""
+    with pytest.raises(ValueError) as exc_info:
+        sample_book.rate_publication(5)
+    assert "finishing" in str(exc_info.value).lower()
+
+    sample_book.start_reading()
+    with pytest.raises(ValueError) as exc_info:
+        sample_book.rate_publication(5)
+    assert "finishing" in str(exc_info.value).lower()
+
