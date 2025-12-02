@@ -109,7 +109,7 @@ class Publication(ABC):
             return d.isoformat() if d else None
 
         return {
-            "pub_type": self._pub_type,
+            "type": self.__class__.__name__,
             "pub_id": self.id,
             "title": self.title,
             "author": self.author,
@@ -136,7 +136,7 @@ class Publication(ABC):
         Returns:
             Book or Magazine instance
         """
-        pub_type = data.get["type"]
+        pub_type = data.get("type")
 
         if pub_type == "Book":
             return Book.from_dict(data)
@@ -379,10 +379,11 @@ class Book(Publication, DigitalAsset):
     def to_dict(self) -> dict:
         """Book-specific serialization."""
         data = super().to_dict()
-
-        data["isbn"] = self.isbn
-        data["edition"] = self.edition
-        data["file_path"] = self.file_path
+        data.update({
+            "isbn": self.isbn,
+            "edition": self.edition,
+            "file_path": self.file_path
+        })
         return data
     
     @classmethod
@@ -494,10 +495,11 @@ class Magazine(Publication, DigitalAsset):
     def to_dict(self) -> dict:
         """Magazine-specific serialization."""
         data = super().to_dict()
-
-        data["issn"] = self.issn
-        data["issue_number"] = self.issue_number
-        data["file_path"] = self.file_path
+        data.update({
+            "issn": self.issn,
+            "issue_number": self.issue_number,
+            "file_path": self.file_path
+        })
         return data
     
     @classmethod

@@ -61,15 +61,14 @@ class Annotation:
         annotation = cls(
             annotation_id=data["id"],
             text=data["text"],
-            reference_excerpt=data.get["reference_excerpt"]
+            reference_excerpt=data.get("reference_excerpt")
         )
 
-        if data.get["date"]:
+        if data.get("date"):
             annotation._date = date.fromisoformat(data["date"])
 
-    @staticmethod
-    def from_dict(data: dict) -> 'Annotation':
-        pass
+        return annotation
+
 
     @property
     def id(self):
