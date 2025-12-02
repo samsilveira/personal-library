@@ -68,7 +68,7 @@ class Publication(ABC):
         self._author = author
         self._publisher = publisher
         self._genre = genre
-        self._number_of_pages = number_of_pages
+        self.number_of_pages = number_of_pages
         self._pub_type = pub_type
         
         self.__status = "UNREAD"
@@ -116,7 +116,7 @@ class Publication(ABC):
             "publisher": self.publisher,
             "year": self.year,
             "genre": self._genre,
-            "number_of_pages": self._number_of_pages,
+            "number_of_pages": self.number_of_pages,
             "status": self.status,
             "start_read_date": date_to_str(self.start_read_date),
             "end_read_date": date_to_str(self.end_read_date),
@@ -184,6 +184,23 @@ class Publication(ABC):
     def publisher(self):
         """Get publication's publisher."""
         return self._publisher
+    
+    @property
+    def genre(self):
+        """Get publication's genre."""
+        return self._genre
+    
+    @property
+    def number_of_pages(self):
+        """Get publication's number of page."""
+        return self._number_of_pages
+    
+    @number_of_pages.setter
+    def number_of_pages(self, value: int):
+        """Set publication number of pages wuth validation."""
+        if value <= 0:
+            raise ValueError("Number of pages must be greater than zero")
+        self._number_of_pages = value
 
     @property
     def status(self):
@@ -194,6 +211,14 @@ class Publication(ABC):
     def rating(self):
         """Get publication's rating."""
         return self.__rating
+    
+    @property
+    def rating_inclusion_date(self):
+        return self._rating_inclusion_date
+    
+    @property
+    def annotations(self):
+        return self._annotations
 
     def start_reading(self):
         """
