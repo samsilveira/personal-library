@@ -115,7 +115,7 @@ class Report:
         print("\n" + "=" * 60)
         print("RELATÓRIO DE PUBLICAÇÕES POR STATUS")
         print("=" * 60)
-        print(f"\nTotla de Publicações: {total} ")
+        print(f"\nTotal de Publicações: {total} ")
 
         if total == 0:
             print("\nNenhuma publicação cadastrada.")
@@ -125,7 +125,7 @@ class Report:
         print("\n" + "-" * 60)
 
         status_info = {
-            "UNREAD": "Não lidos",
+            "UNREAD": "Não Lidos",
             "READING": "Lendo",
             "READ": "Lidos"
         }
