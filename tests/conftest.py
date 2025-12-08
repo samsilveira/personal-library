@@ -1,4 +1,5 @@
 import pytest
+from datetime import date
 from models import Book, Report, Collection
 
 @pytest.fixture
@@ -119,6 +120,6 @@ def populated_collection():
     )
     
     for book in [book1, book2, book3, book4, book5]:
-        collection.add_publication(book)
+        collection.register_publication(book)
     
     return collection

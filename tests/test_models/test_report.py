@@ -117,4 +117,4 @@ class TestReportNewMethods:
         assert "ESTATÍSTICAS GERAIS" in captured.out
         assert "DISTRIBUIÇÃO POR STATUS" in captured.out
         assert "TOP 5 PUBLICAÇÕES" in captured.out
-        assert "8.75" in captured.out  # Average rating
+        assert "8.75" in captured.out
