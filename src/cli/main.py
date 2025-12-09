@@ -210,6 +210,40 @@ def detalhes(user: User, pub_id):
     click.echo(f"{'='*60}\n")
 
 @cli.command
+@click.argument('meta', type=int)
+@click.option('--limite-simultaneo', type=int)
+@click.pass_obj
+def definir_meta(user: User, meta, limite_simultaneo):
+    """Atualiza a meta anual de leituras e limite de leituras simultâneas"""
+    try:
+        if meta is None and limite_simultaneo is None:
+            click.echo("Forneça pelo menos uma opção (--meta ou --limite-simultaneo)", err=True)
+            return
+        
+        if meta is not None:
+            if meta <= 0:
+                click.echo(f"A meta deve ser maior que 0", err=True)
+                return
+            else:
+                user.configuration.annual_goal = meta
+
+        if limite_simultaneo is not None:
+            if limite_simultaneo <= 0:
+                click.echo(f"O limite de leitura simultânea deve ser maior que 0", err=True)
+                return
+            else:
+                user.configuration.simultaneous_reading_limit = limite_simultaneo
+
+        user.configuration.save_settings()
+        if meta is not None:
+            click.echo(f"Meta anual: {user.configuration.annual_goal} livros")
+        if limite_simultaneo is not None:
+            click.echo(f"Limite de leituras simultâneas: {user.configuration.simultaneous_reading_limit} livros")
+    except Exception as e:
+        click.echo(f"Erro: {e}")
+
+
+@cli.command
 @click.pass_obj
 def progresso_meta(user: User):
     """Mostra progresso da meta anual de leitura"""
