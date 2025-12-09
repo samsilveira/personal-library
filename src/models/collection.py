@@ -123,7 +123,12 @@ class Collection:
         Returns:
             List of publications read during the specified period
         """
-        return [pub for pub in self._publications.values() if pub.status == "READ" and start_date <= pub.end_read_date <= end_date]
+        return [
+            pub for pub in self._publications.values() 
+            if pub.status == "READ" 
+            and pub.end_read_date
+            and start_date <= pub.end_read_date <= end_date
+        ]
 
 
     def start_publication_reading(self, publication_id: int, configuration: Configuration) -> bool:
