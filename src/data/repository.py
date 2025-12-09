@@ -7,7 +7,7 @@ import sqlite3
 from typing import List
 from datetime import date
 from pathlib import Path
-from models import Collection, Publication, Annotation
+from src.models import Collection, Publication, Annotation
 
 def _get_data_filepath(filename: str = "library.json") -> Path:
     """

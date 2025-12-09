@@ -8,6 +8,11 @@ venv/
 env/
 .venv
 
+*.egg-info/
+dist/
+build/
+*.egg
+
 # IDE
 .vscode/
 .idea/
@@ -23,3 +28,5 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+.mypy_cache/

@@ -4,8 +4,8 @@ Command-line interface for the Personal Digital Library.
 
 import click
 from datetime import date
-from models import User, Book, Magazine, Report
-from data import repository
+from src.models import User, Book, Magazine, Report
+from src.data import repository
 
 @click.group()
 @click.pass_context

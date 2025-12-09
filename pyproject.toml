@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=80.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biblioteca-pessoal"
+version = "0.1.0"
+description = "Sistema de Biblioteca Pessoal Digital"
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.1.7",
+]
+
+[project.scripts]
+biblioteca = "src.cli.main:cli"
+
+[tool.setuptools]
+packages = ["src", "src.cli", "src.models", "src.data"]

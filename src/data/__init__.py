@@ -4,9 +4,8 @@ Data persistence layer.
 Manages system data storage and retrieval.
 """
 
-from .repository import save_publication, load_publications
+from . import repository
 
 __all__ = [
-    'save__publication',
-    'load_publications',
+    'repository'
 ]
