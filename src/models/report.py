@@ -221,7 +221,7 @@ class Report:
             print("-"*70)
             
             for i, pub in enumerate(top_5, 1):
-                stars = "⭐" * int(pub.rating / 2)
+                stars = "✦" * int(pub.rating / 2)
                 print(f"  {i}. {pub.title[:45]:45} │ {pub.rating:.1f}/10 {stars}")
         
         print("\n" + "="*70 + "\n")

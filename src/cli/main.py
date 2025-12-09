@@ -144,7 +144,7 @@ def avaliar(user: User, pub_id, nota):
         pub.rate_publication(nota)
         repository.save_collection(user.collection)
 
-        stars = "⭐" * int(nota/2)
+        stars = "✦" * int(nota/2)
         click.echo(f"'{pub.title}' avaliado com {nota}/10 {stars}")
     except (ValueError, TypeError) as e:
         click.echo(f"Erro: {e}", err=True)
