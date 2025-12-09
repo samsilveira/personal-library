@@ -99,9 +99,12 @@ def listar(user: User):
 def iniciar_leitura(user: User, pub_id):
     """Inicia a leitura de uma publicação"""
     try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
         user.start_reading(pub_id)
         repository.save_collection(user.collection)
-        click.echo(f"Leitura iniciada!")
+        click.echo(f" [{pub.id}] {pub.title} - Leitura iniciada!")
     except ValueError as e:
         click.echo(f"Erro: {e}", err=True)
 
@@ -205,6 +208,27 @@ def detalhes(user: User, pub_id):
         click.echo(f"Avaliação: {pub.rating}/10")
 
     click.echo(f"{'='*60}\n")
+
+@cli.command
+@click.pass_obj
+def progresso_meta(user: User):
+    """Mostra progresso da meta anual de leitura"""
+    result = Report.check_annual_goal_progress(user.collection, user.configuration)
+
+    goal = result["goal"]
+    completed = result["completed"]
+    remaining = result["remaining"]
+    percentage = result["percentage"]
+    on_track = result["on_track"]
+
+    click.echo(f"Meta anual: {goal} livros")
+    click.echo(f"Concluídos: {completed}")
+    click.echo(f"Progresso: {percentage}%")
+
+    if on_track:
+        click.echo("No ritmo esperado!")
+    else:
+        click.echo("Em atraso!")
 
 if __name__ == '__main__':
     cli()
