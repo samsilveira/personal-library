@@ -4,7 +4,7 @@ Command-line interface for the Personal Digital Library.
 
 import click
 from datetime import date
-from models import User, Book, Magazine
+from models import User, Book, Magazine, Report
 from data import repository
 
 @click.group()
@@ -128,16 +128,32 @@ def finalizar(user: User, pub_id):
         click.echo(f"Erro: {e}", err=True)
 
 @cli.command()
-@click.argument('id')
+@click.argument('pub_id', type=int)
 @click.argument('nota', type=float)
-def avaliar(id, nota):
+@click.pass_obj
+def avaliar(user: User, pub_id, nota):
     """Avalia uma publicação (0-10)"""
-    pass
+    try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
+        if not pub:
+            click.echo(f"Publicação com o ID {pub_id} não encontrada.", err=True)
+            return
+        
+        pub.rate_publication(nota)
+        repository.save_collection(user.collection)
+
+        stars = "⭐" * int(nota/2)
+        click.echo(f"'{pub.title}' avaliado com {nota}/10 {stars}")
+    except (ValueError, TypeError) as e:
+        click.echo(f"Erro: {e}", err=True)
 
 @cli.command()
-def relatorio():
+@click.pass_obj
+def relatorio(user: User):
     """Exibe relatório da biblioteca"""
-    pass
+    Report.print_full_report(user.collection)
 
 if __name__ == '__main__':
     cli()
