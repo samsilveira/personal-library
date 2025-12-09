@@ -99,7 +99,35 @@ class Report:
             - 'percentage': progress percentage
             - 'on_track': boolena indicating if on pace
         """
-        pass
+        read_books = collection.search_by_status("READ")
+
+        current_year = date.today().year
+        books_this_year = [
+            book for book in read_books
+            if book.end_read_date and book.end_read_date.year == current_year
+        ]
+
+        completed = len(books_this_year)
+        goal = configuration.annual_goal
+
+        current_month = date.today().month
+        months_passed = current_month
+
+        expected_progress = (months_passed / 12) * goal
+
+        on_track = completed >= expected_progress
+
+        remaining = max(0, goal - completed)
+        percentage = (completed / goal * 100) if goal > 0 else 0.0
+
+        return {
+            "goal": goal,
+            "completed": completed,
+            "remaining": remaining,
+            "percentage": round(percentage, 1),
+            "expected_progress": round(expected_progress, 1),
+            "on_track": on_track
+        }
 
     @staticmethod
     def print_status_report(collection: Collection) -> None:
