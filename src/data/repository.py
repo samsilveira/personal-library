@@ -7,7 +7,7 @@ import sqlite3
 from typing import List
 from datetime import date
 from pathlib import Path
-from models import Publication, Annotation
+from models import Collection, Publication, Annotation
 
 def _get_data_filepath(filename: str = "library.json") -> Path:
     """
@@ -78,7 +78,47 @@ def load_publications(filepath: str = "library.json") -> List[Publication]:
         print(f"Erro inesperado ao carregar publicações: {e}")
         raise
 
+def save_collection(collection: Collection, filepath: str = "library.json") -> None:
+    """
+    Save all publications in a JSON file.
+    """
+    full_path = _get_data_filepath(filepath)
+    publications = collection.list_publications()
+    data = [pub.to_dict() for pub in publications]
 
+    full_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(full_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+    print(f"{len(publications)} salvas em {full_path}")
+
+def load_collection(filepath: str = "library.json") -> Collection:
+    """
+    Load collection from a JSON file.
+    """
+    full_path = _get_data_filepath(filepath)
+    collection = Collection()
+
+    try:
+        with open(full_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+            for pub_data in data:
+                pub = Publication.from_dict(pub_data)
+                collection.register_publication(pub)
+
+        print(f"{len(data)} publicações carregadas de {full_path}")
+
+    except FileNotFoundError:
+        print(f"Arquivo não encontrado: {full_path}")
+        print("Retornando collection vazia (primeira execução)")
+
+    except json.JSONDecodeError as e:
+        print(f"Erro ao decodificar JSON: {e}")
+        raise
+
+    return collection
 
 '''
 
