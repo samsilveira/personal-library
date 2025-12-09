@@ -155,5 +155,56 @@ def relatorio(user: User):
     """Exibe relatório da biblioteca"""
     Report.print_full_report(user.collection)
 
+@cli.command()
+@click.argument('termo')
+@click.option('--por', type=click.Choice(['titulo', 'autor']), default='titulo')
+@click.pass_obj
+def buscar(user: User, termo, por):
+    """Busca publicações por autor ou título"""
+    if por == "autor":
+        results = user.collection.search_by_author(termo)                
+    else:
+        results = user.collection.search_by_title(termo)
+
+    if not results:
+        click.echo(f"Nenhuma publicação encontrada para: {termo}")
+        return
+    
+    click.echo(f"Encontradas {len(results)} publicações:\n")
+    for pub in results:
+        click.echo(f"   [{pub.id}] {pub.title} - {pub.author}")
+        click.echo(f"       {pub.status}")
+
+@cli.command
+@click.argument('pub_id', type=int)
+@click.pass_obj
+def detalhes(user: User, pub_id):
+    """Mostra detalhes completos de uma publicação"""
+    pubs = user.collection.list_publications()
+    pub = next((p for p in pubs if p.id == pub_id), None)
+
+    if not pub:
+        click.echo(f"Publicação com o ID {pub_id} não encontrada.", err=True)
+        return
+    
+    click.echo(f"\n{'='*60}")
+    click.echo(f"{pub.title}")
+    click.echo(f"{'='*60}")
+    click.echo(f"Autor: {pub.author}")
+    click.echo(f"Editora: {pub.publisher}")
+    click.echo(f"Ano: {pub.year}")
+    click.echo(f"Gênero: {pub.genre}")
+    click.echo(f"Páginas: {pub.number_of_pages}")
+    click.echo(f"Status: {pub.status}")
+
+    if pub.start_read_date:
+        click.echo(f"Início da leitura: {pub.start_read_date}")
+    if pub.end_read_date:
+        click.echo(f"Fim da leitura: {pub.end_read_date}")
+    if pub.rating:
+        click.echo(f"Avaliação: {pub.rating}/10")
+
+    click.echo(f"{'='*60}\n")
+
 if __name__ == '__main__':
     cli()
