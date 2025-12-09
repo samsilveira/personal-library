@@ -3,11 +3,19 @@ Command-line interface for the Personal Digital Library.
 """
 
 import click
+from datetime import date
+from models import User, Book, Magazine
+from data import repository
 
 @click.group()
-def cli():
+@click.pass_context
+def cli(ctx):
     """Sistema de Biblioteca Pessoal Digital"""
-    pass
+    user = User(name="Usuário", email="temporario@email.com")
+
+    user.collection = repository.load_collection()
+
+    ctx.obj = user
 
 @cli.command()
 def init():
@@ -18,28 +26,106 @@ def init():
 @cli.command()
 @click.argument('titulo')
 @click.argument('autor')
-@click.argument('tipo')
+@click.argument('editora')
+@click.argument('ano', type=int)
+@click.argument('genero')
+@click.argument('numero-Paginas', type=int)
 @click.option('--tipo', type=click.Choice(['livro', 'revista']), default='livro')
-def cadastrar(titulo, autor, tipo):
+@click.option('--isbn', default="")
+@click.option('--issn', default="")
+@click.option('--edicao', type=int, default=1)
+@click.option('--numero', type=int, default=1)
+@click.pass_obj
+def cadastrar(user: User, titulo, autor, editora, ano, genero, numero_paginas, tipo, isbn, issn, edicao, numero):
     """Cadastra uma nova publicação"""
-    pass
+    try:
+        pub_id = len(user.collection.list_publications()) + 1
+
+        if tipo == "livro":
+            pub = Book(
+                pub_id=pub_id,
+                title=titulo,
+                author=autor,
+                publisher=editora,
+                year=ano,
+                genre=genero,
+                number_of_pages=numero_paginas,
+                isbn=isbn,
+                edition=edicao
+            )
+        else:
+            pub = Magazine(
+                pub_id=pub_id,
+                title=titulo,
+                author=autor,
+                publisher=editora,
+                year=ano,
+                genre=genero,
+                number_of_pages=numero_paginas,
+                issn=issn,
+                issue_number=numero
+            )
+
+        user.collection.register_publication(pub)
+        repository.save_collection(user.collection)
+        click.echo(f"{tipo.capitalize()} '{titulo}' cadastrado com sucesso! (ID: {pub_id})")
+
+    except ValueError as e:
+        click.echo(f"Erro: {e}", err=True)
+    except Exception as e:
+        click.echo(f"Erro inesperado: {e}", err=True)
+
+
 
 @cli.command()
-def listar():
+@click.pass_obj
+def listar(user: User):
     """Lista todas as publicações"""
-    pass
+    pubs = user.collection.list_publications()
+
+    if not pubs:
+        click.echo("Nenhuma publicação encontrada")
+        return
+    
+    click.echo(f"Total: {len(pubs)} publicações\n")
+    for pub in pubs:
+        click.echo(f"   [{pub.id}] {pub.title} - {pub.author}")
+        click.echo(f"       Status: {pub.status} | Ano: {pub.year}")
+        click.echo("")
 
 @cli.command()
-@click.argument('id')
-def iniciar(id):
+@click.argument('pub_id', type=int)
+@click.pass_obj
+def iniciar_leitura(user: User, pub_id):
     """Inicia a leitura de uma publicação"""
-    pass
+    try:
+        user.start_reading(pub_id)
+        repository.save_collection(user.collection)
+        click.echo(f"Leitura iniciada!")
+    except ValueError as e:
+        click.echo(f"Erro: {e}", err=True)
 
 @cli.command()
-@click.argument('id')
-def finalizar(id):
+@click.argument('pub_id', type=int)
+@click.pass_obj
+def finalizar(user: User, pub_id):
     """Finaliza a leitura de uma publicação"""
-    pass
+    try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
+        if not pub:
+            click.echo(f"Publicação com o ID {pub_id} não encontrada.", err=True)
+            return
+        
+        pub.finish_reading()
+        repository.save_collection(user.collection)
+
+        click.echo(f"Leitura de '{pub.title}' finalizada!")
+        click.echo(f"   Data de término: {pub.end_read_date}")
+            
+    except ValueError as e:
+        click.echo(f"Erro: {e}", err=True)
 
 @cli.command()
 @click.argument('id')
