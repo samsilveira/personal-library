@@ -40,7 +40,7 @@ class Annotation:
     def to_dict(self) -> dict:
         """Convert annotation to dictionary for JSON serialization."""
         return {
-            "id": self.id,
+            "annotation_id": self.id,
             "text": self.text,
             "reference_excerpt": self.reference_excerpt,
             "date": self.date.isoformat() if self.date else None
@@ -59,7 +59,7 @@ class Annotation:
         """
 
         annotation = cls(
-            annotation_id=data["id"],
+            annotation_id=data["annotation_id"],
             text=data["text"],
             reference_excerpt=data.get("reference_excerpt")
         )
