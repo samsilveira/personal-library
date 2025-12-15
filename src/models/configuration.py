@@ -39,6 +39,26 @@ class Configuration:
         self.simultaneous_reading_limit = simultaneous_reading_limit
         self.favorite_genre = favorite_genre
 
+    @property
+    def annual_goal(self):
+        return self._annual_goal
+    
+    @annual_goal.setter
+    def annual_goal(self, value: int):
+        if value <= 0:
+            raise ValueError("Annual target cannot be less than or equal to zero.")
+        self._annual_goal = value
+
+    @property
+    def simultaneous_reading_limit(self):
+        return self._simultaneous_reading_limit
+    
+    @simultaneous_reading_limit.setter
+    def simultaneous_reading_limit(self, value: int):
+        if value <= 0:
+            raise ValueError("Limit for simultaneous readings cannot be less than or equal to zero.")
+        self._simultaneous_reading_limit = value
+
     def _to_dict(self) -> dict:
         """Convert configuration to dictionary for JSON serialization."""
         return {
@@ -46,6 +66,19 @@ class Configuration:
                 "simultaneous_reading_limit": self.simultaneous_reading_limit,
                 "favorite_genre": self.favorite_genre
             }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Configuration':
+        """
+        Create Configuration from dictionary.
+        """
+        configuration = cls(
+            annual_goal=data["annual_goal"],
+            simultaneous_reading_limit=data["simultaneous_reading_limit"],
+            favorite_genre=data["favorite_genre"]
+        )
+        
+        return configuration
         
     def load_settings(self, filepath: str = "settings.json") -> None:
         """
@@ -92,3 +125,4 @@ class Configuration:
                 json.dump(settings_data, file, indent=4, ensure_ascii=False)
         except Exception as e:
             raise IOError(f"Failed to save settings to {directory}: {e}")
+        
