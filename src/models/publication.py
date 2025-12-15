@@ -515,7 +515,7 @@ class Magazine(Publication, DigitalAsset):
         )
 
         self._issn = issn
-        self._issue_number = issue_number
+        self.issue_number = issue_number
 
     def to_dict(self) -> dict:
         """Magazine-specific serialization."""
@@ -565,9 +565,18 @@ class Magazine(Publication, DigitalAsset):
     def issn(self):
         """Get the magazine's ISSN."""
         return self._issn
-    
+
     @property
     def issue_number(self):
         """Get the magazine's issue number."""
         return self._issue_number
+    
+    @issue_number.setter
+    def issue_number(self, value: int):
+        if value <= 0:
+            raise ValueError("Issue number must be positive")
+        self._issue_number = value
 
+    def __str__(self):
+        """Returns a string representation of the magazine including ISSN."""
+        return f"[{self.id}] {self.title} - {self._author} (ISSN: {self.issn})"
