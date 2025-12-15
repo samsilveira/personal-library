@@ -40,8 +40,32 @@ def sample_magazine():
 def sample_collection():
     """Create a collection with sample publications."""
     collection = Collection()
-    collection.register_publication(sample_book)
-    collection.register_publication(sample_magazine)
+
+    book = Book(
+        pub_id=1,
+        title="1984",
+        author="George Orwell",
+        publisher="Secker & Warburg",
+        year=1949,
+        genre="Dystopian Fiction",
+        number_of_pages=328,
+        isbn="978-0452284234"
+    )
+
+    magazine = Magazine(
+        pub_id=2,
+        title="National Geographic",
+        author="Various authors",
+        publisher="National Geographic Society",
+        year=2025,
+        genre="Science",
+        number_of_pages=120,
+        issue_number=145,
+        issn="0027-9358"
+    )
+
+    collection.register_publication(book)
+    collection.register_publication(magazine)
     return collection
 
 @pytest.fixture
