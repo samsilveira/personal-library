@@ -178,7 +178,7 @@ def buscar(user: User, termo, por):
         click.echo(f"   [{pub.id}] {pub.title} - {pub.author}")
         click.echo(f"       {pub.status}")
 
-@cli.command
+@cli.command()
 @click.argument('pub_id', type=int)
 @click.pass_obj
 def detalhes(user: User, pub_id):
@@ -209,7 +209,7 @@ def detalhes(user: User, pub_id):
 
     click.echo(f"{'='*60}\n")
 
-@cli.command
+@cli.command()
 @click.argument('meta', type=int)
 @click.option('--limite-simultaneo', type=int)
 @click.pass_obj
@@ -243,7 +243,7 @@ def definir_meta(user: User, meta, limite_simultaneo):
         click.echo(f"Erro: {e}")
 
 
-@cli.command
+@cli.command()
 @click.pass_obj
 def progresso_meta(user: User):
     """Mostra progresso da meta anual de leitura"""
@@ -265,9 +265,9 @@ def progresso_meta(user: User):
         click.echo("Em atraso!")
 
 
-@cli.command('relatorio-avaliacoes')
+@cli.command()
 @click.pass_obj
-def evaluation_report(user: User):
+def relatorio_avaliacoes(user: User):
     """Exibe relatório detalhado de avaliações."""
     from src.strategies import EvaluationReportStrategy
     
@@ -284,10 +284,10 @@ def evaluation_report(user: User):
     click.echo(output)
 
 
-@cli.command('top-rated')
+@cli.command()
 @click.option('--limit', '-l', default=5, help='Número de publicações a exibir')
 @click.pass_obj
-def top_rated_report(user: User, limit):
+def top_rated(user: User, limit):
     """Exibe as publicações melhor avaliadas."""
     from src.strategies import TopRatedReportStrategy
     
@@ -304,9 +304,9 @@ def top_rated_report(user: User, limit):
     click.echo(output)
 
 
-@cli.command('progresso-detalhado')
+@cli.command()
 @click.pass_obj
-def detailed_progress(user: User):
+def progresso_detalhado(user: User):
     """Exibe relatório detalhado de progresso anual."""
     from src.strategies import ProgressReportStrategy
     
