@@ -264,5 +264,64 @@ def progresso_meta(user: User):
     else:
         click.echo("Em atraso!")
 
+
+@cli.command('relatorio-avaliacoes')
+@click.pass_obj
+def evaluation_report(user: User):
+    """Exibe relatório detalhado de avaliações."""
+    from src.strategies import EvaluationReportStrategy
+    
+    publications = user.collection.list_publications()
+    
+    if not publications:
+        click.echo("📚 Nenhuma publicação cadastrada ainda.")
+        return
+    
+    strategy = EvaluationReportStrategy()
+    report_data = strategy.generate(publications)
+    output = strategy.format_output(report_data)
+    
+    click.echo(output)
+
+
+@cli.command('top-rated')
+@click.option('--limit', '-l', default=5, help='Número de publicações a exibir')
+@click.pass_obj
+def top_rated_report(user: User, limit):
+    """Exibe as publicações melhor avaliadas."""
+    from src.strategies import TopRatedReportStrategy
+    
+    publications = user.collection.list_publications()
+    
+    if not publications:
+        click.echo("📚 Nenhuma publicação cadastrada ainda.")
+        return
+    
+    strategy = TopRatedReportStrategy()
+    report_data = strategy.generate(publications, limit=limit)
+    output = strategy.format_output(report_data)
+    
+    click.echo(output)
+
+
+@cli.command('progresso-detalhado')
+@click.pass_obj
+def detailed_progress(user: User):
+    """Exibe relatório detalhado de progresso anual."""
+    from src.strategies import ProgressReportStrategy
+    
+    publications = user.collection.list_publications()
+    
+    if not publications:
+        click.echo("📚 Nenhuma publicação cadastrada ainda.")
+        return
+    
+    strategy = ProgressReportStrategy()
+    report_data = strategy.generate(publications, config=user.configuration)
+    output = strategy.format_output(report_data)
+    
+    click.echo(output)
+
+
 if __name__ == '__main__':
     cli()
