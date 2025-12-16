@@ -280,8 +280,8 @@ Usuário → CLI → Models → Repository → JSON
 
 ## 👨‍💻 Autor
 
-**Samuel Wagner Tiburi Silveira**
-Disciplina: Programação Orientada à Objetos (ES0008)
+**Samuel Wagner Tiburi Silveira**  
+Disciplina: Programação Orientada à Objetos (ES0008)  
 Universidade Federal do Cariri
 
 ---
