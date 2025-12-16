@@ -487,7 +487,7 @@ def listar_todas_anotacoes(user: User):
                 has_annotation = True
                 total_annotations += len(annotations)
 
-                click.echo(f"{pub.title} ({len(annotations)} {"anotação" if len(annotations) == 1 else "anotações"})")
+                click.echo(f"{pub.title} ({len(annotations)} {'anotação' if len(annotations) == 1 else 'anotações'})")
                 click.echo(f"    {'-' * 65}")
 
                 for ann in annotations:
@@ -500,7 +500,7 @@ def listar_todas_anotacoes(user: User):
         if not has_annotation:
             click.echo("Nenhuma anotação cadastrada.")
         else:
-            click.echo(f"Total: {total_annotations} {"anotação" if total_annotations == 1 else "anotações"} em {len(pubs)} {"publicação" if len(pubs) == 1 else "publicações"}\n")
+            click.echo(f"Total: {total_annotations} {'anotação' if total_annotations == 1 else 'anotações'} em {len(pubs)} {'publicação' if len(pubs) == 1 else 'publicações'}\n")
 
     except Exception as e:
         click.echo(f"Erro: {e}", err=True)
