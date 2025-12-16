@@ -18,18 +18,12 @@ def cli(ctx):
     ctx.obj = user
 
 @cli.command()
-def init():
-    """Inicializa o banco de dados"""
-    click.echo("Inicializando banco de dados...")
-    pass
-
-@cli.command()
 @click.argument('titulo')
 @click.argument('autor')
 @click.argument('editora')
 @click.argument('ano', type=int)
 @click.argument('genero')
-@click.argument('numero-Paginas', type=int)
+@click.argument('numero_paginas', type=int)
 @click.option('--tipo', type=click.Choice(['livro', 'revista']), default='livro')
 @click.option('--isbn', default="")
 @click.option('--issn', default="")
