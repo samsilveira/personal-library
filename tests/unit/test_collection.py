@@ -93,12 +93,10 @@ class TestCollection:
         """Test filtering publications by reading period."""
         collection = Collection()
         
-        # Book read today
         book1 = Book(1, "Recent", "Author", "Pub", 2020, "Fiction", 100)
         book1.start_reading()
         book1.finish_reading()
         
-        # Book read 10 days ago
         book2 = Book(2, "Older", "Author", "Pub", 2020, "Fiction", 100)
         book2.start_reading()
         book2._end_read_date = date.today() - timedelta(days=10)
@@ -107,7 +105,6 @@ class TestCollection:
         collection.register_publication(book1)
         collection.register_publication(book2)
         
-        # Filter last 7 days
         start = date.today() - timedelta(days=7)
         end = date.today()
         results = collection.filter_by_reading_period(start, end)
@@ -129,16 +126,13 @@ class TestCollection:
         collection = Collection()
         sample_configuration.simultaneous_reading_limit = 2
         
-        # Add 3 books
         for i in range(1, 4):
             book = Book(i, f"Book {i}", "Author", "Pub", 2020, "Fiction", 100)
             collection.register_publication(book)
         
-        # Start reading 2 books (at limit)
         collection.start_publication_reading(1, sample_configuration)
         collection.start_publication_reading(2, sample_configuration)
         
-        # Try to start 3rd book (exceeds limit)
         with pytest.raises(ValueError, match="Maximum number of simultaneous readings reached"):
             collection.start_publication_reading(3, sample_configuration)
     

@@ -5,7 +5,7 @@ Pytest configuration and shared fixtures.
 import pytest
 from datetime import date
 from src.models import Book, Magazine, Annotation, Report, Collection, Configuration, User
-from data import repository
+from src.data import repository
 
 @pytest.fixture
 def sample_book():
@@ -169,97 +169,88 @@ def empty_collection():
 
 @pytest.fixture
 def populated_collection():
-    """Create a collection with sample books."""
+    """
+    Create a collection with 5 publications in different states:
+    - 2 UNREAD
+    - 1 READING
+    - 2 READ (with ratings 8.5 and 9.0)
+    """
     collection = Collection()
     
-    # 2 UNREAD (não precisa fazer nada, já é o padrão)
-    book1 = Book(
-        pub_id=1, 
-        title="Book 1", 
-        author="Author 1", 
-        publisher="Pub 1",
-        year=2020, 
-        genre="Fiction", 
-        number_of_pages=200, 
-        isbn="111"
-    )
-    # ✅ book1 já está como UNREAD por padrão
+    book1 = Book(1, "Livro Não Lido 1", "Autor A", "Editora", 2025, "Ficção", 300)
+    book2 = Book(2, "Livro Não Lido 2", "Autor B", "Editora", 2025, "Ciência", 250)
     
-    book2 = Book(
-        pub_id=2, 
-        title="Book 2", 
-        author="Author 2", 
-        publisher="Pub 2",
-        year=2021, 
-        genre="Fiction", 
-        number_of_pages=300, 
-        isbn="222"
-    )
-    # ✅ book2 já está como UNREAD por padrão
+    book3 = Book(3, "Livro em Leitura", "Autor C", "Editora", 2024, "História", 400)
+    book3.start_reading()
     
-    # 1 READING
-    book3 = Book(
-        pub_id=3, 
-        title="Book 3", 
-        author="Author 3", 
-        publisher="Pub 3",
-        year=2022, 
-        genre="Fiction", 
-        number_of_pages=250, 
-        isbn="333"
-    )
-    # ✅ Usar _restore_state para definir como READING
-    book3._restore_state(
-        status="READING",
-        start_date=date(2024, 1, 1),
-        end_date=None,
-        rating=None,
-        rating_date=None,
-        annotations=[]
-    )
+    book4 = Book(4, "Livro Lido 1", "Autor D", "Editora", 2024, "Biografia", 350)
+    book4.start_reading()
+    book4.finish_reading()
+    book4.rate_publication(8.5)
     
-    # 2 READ (com ratings)
-    book4 = Book(
-        pub_id=4, 
-        title="Book 4", 
-        author="Author 4", 
-        publisher="Pub 4",
-        year=2023, 
-        genre="Fiction", 
-        number_of_pages=400, 
-        isbn="444"
-    )
-    # ✅ Usar _restore_state para definir como READ com rating
-    book4._restore_state(
-        status="READ",
-        start_date=date(2024, 1, 1),
-        end_date=date(2024, 2, 1),
-        rating=8.5,
-        rating_date=date(2024, 2, 1),
-        annotations=[]
-    )
+    book5 = Book(5, "Livro Lido 2", "Autor E", "Editora", 2023, "Fantasia", 500)
+    book5.start_reading()
+    book5.finish_reading()
+    book5.rate_publication(9.0)
     
-    book5 = Book(
-        pub_id=5, 
-        title="Book 5", 
-        author="Author 5", 
-        publisher="Pub 5",
-        year=2024, 
-        genre="Fiction", 
-        number_of_pages=350, 
-        isbn="555"
-    )
-    # ✅ Usar _restore_state para definir como READ com rating
-    book5._restore_state(
-        status="READ",
-        start_date=date(2024, 1, 15),
-        end_date=date(2024, 2, 15),
-        rating=9.0,
-        rating_date=date(2024, 2, 15),
-        annotations=[]
-    )
-    
-    for book in [book1, book2, book3, book4, book5]:
-        collection.register_publication(book)
+    collection.register_publication(book1)
+    collection.register_publication(book2)
+    collection.register_publication(book3)
+    collection.register_publication(book4)
+    collection.register_publication(book5)
     
     return collection
+
+@pytest.fixture
+def collection_for_annual_goal():
+    """Create a collection with books read in current year."""
+    collection = Collection()
+    current_year = date.today().year
+    
+    for i in range(1, 4):
+        book = Book(i, f"Livro {i}", f"Autor {i}", "Editora", current_year, "Ficção", 300)
+        book.start_reading()
+        book.finish_reading()
+        collection.register_publication(book)
+    
+    old_book = Book(4, "Livro Antigo", "Autor", "Editora", current_year - 1, "Ficção", 200)
+    old_book.start_reading()
+    old_book.finish_reading()
+    old_book._end_read_date = date(current_year - 1, 12, 15)
+    collection.register_publication(old_book)
+    
+    return collection
+
+@pytest.fixture
+def collection_with_ratings():
+    """
+    Create a collection with multiple rated books for evaluation testing.
+    Ratings: 7.0, 8.5, 9.0, 6.5, 10.0
+    """
+    collection = Collection()
+
+    ratings = [7.0, 8.5, 9.0, 6.5, 10.0]
+    for i, rating in enumerate(ratings, start=1):
+        book = Book(
+            pub_id=i,
+            title=f"Livro avaliado {i}",
+            author=f"Autor {i}",
+            publisher="Editora",
+            year=2021 + i,
+            genre="Ficção",
+            number_of_pages=200 + (i * 50)
+        )
+        book.start_reading()
+        book.finish_reading()
+        book.rate_publication(rating)
+        collection.register_publication(book)
+
+    return collection
+
+@pytest.fixture
+def sample_configuration():
+    """Create a sample configuration with annual goal."""
+    config = Configuration()
+    config.annual_goal = 12
+    config.simultaneous_reading_limit = 3
+    return config
