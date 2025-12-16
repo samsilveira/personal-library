@@ -254,3 +254,10 @@ def sample_configuration():
     config.annual_goal = 12
     config.simultaneous_reading_limit = 3
     return config
+
+@pytest.fixture
+def setup_test_environment(tmp_path, monkeypatch):
+    """Setup test environment with mocked file path."""
+    test_file = tmp_path / "test_library.json"
+    monkeypatch.setattr(repository, '_get_data_filepath', lambda filename: test_file)
+    return test_file
