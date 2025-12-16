@@ -36,10 +36,13 @@ class EvaluationReportStrategy(ReportStrategy):
         if not evaluated:
             return {
                 'total_evaluated': 0,
+                'total_publications': len(publications),
                 'average': None,
                 'std_dev': None,
                 'distribution': {},
-                'most_common': None
+                'most_common': None,
+                'min_rating': None,
+                'max_rating': None
             }
         
         ratings = [p.rating for p in evaluated]
