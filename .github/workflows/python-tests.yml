@@ -1,0 +1,35 @@
+name: Python CI - Testes Pytest
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+    - name: Checkout Código
+      uses: actions/checkout@v4
+      
+    - name: Configurar Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Instalar Dependências
+      run: |
+        python -m pip install --upgrade pip
+        # Instala dependências e o pytest
+        pip install -r requirements.txt
+        
+    - name: Rodar Testes com Pytest
+      # Comando de teste que considera as configurações em pytest.ini
+      run: |
+        pytest -v --cov=src --cov-report=term-missing
