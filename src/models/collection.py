@@ -156,8 +156,34 @@ class Collection:
             raise ValueError("Maximum number of simultaneous readings reached.")
         
         self._publications[publication_id].start_reading()
-        
         return True
+    
+    def to_dict(self) -> dict:
+        """
+        Serialize collection to dictionary.
         
-
+        Returns:
+            Dictionary with all publications serialized
+        """
+        return {
+            'publications': [pub.to_dict() for pub in self._publications.values()]
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Collection':
+        """
+        Create Collection from dictionary.
+        
+        Args:
+            data: Dictionary with collection data
+            
+        Returns:
+            Reconstructed Collection instance
+        """
+        collection = cls()
+        for pub_data in data.get('publications', []):
+            pub = Publication.from_dict(pub_data)
+            collection._publications[pub.id] = pub
+        
+        return collection
     
