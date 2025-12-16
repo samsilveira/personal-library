@@ -4,7 +4,7 @@ Command-line interface for the Personal Digital Library.
 
 import click
 from datetime import date
-from src.models import User, Book, Magazine, Report
+from src.models import User, Book, Magazine, Report, Annotation
 from src.data import repository
 
 @click.group()
@@ -315,6 +315,236 @@ def progresso_detalhado(user: User):
     output = strategy.format_output(report_data)
     
     click.echo(output)
+
+@cli.command()
+@click.argument('pub_id', type=int)
+@click.argument('texto')
+@click.option('--trecho', '-t', help='Trecho de referência da publicação')
+@click.pass_obj
+def adicionar_anotacao(user: User, pub_id, texto, trecho):
+    """Adiciona uma anotação a uma publicação."""
+    try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
+        if not pub:
+            click.echo(f"Publicação com ID {pub_id} não encontrada.", err=True)
+            return
+        
+        existing_annotations = pub.list_annotations()
+        annotation_id = f"ann_{pub_id}_{len(existing_annotations) + 1}"
+
+        annotation = Annotation(
+            annotation_id=annotation_id,
+            text=texto,
+            reference_excerpt=trecho
+        )
+
+        pub.add_annotation(annotation)
+        repository.save_collection(user.collection)
+
+        click.echo(f"Anotação adicionada a '{pub.title}'")
+        click.echo(f"   ID da anotação '{annotation_id}'")
+        if trecho:
+            click.echo(f"   Trecho: {trecho[:50]}...")
+
+    except ValueError as e:
+        click.echo(f"Erro: {e}", err=True)
+    except Exception as e:
+        click.echo(f"Erro inesperado: {e}", err=True)
+
+@cli.command()
+@click.argument('pub_id', type=int)
+@click.pass_obj
+def listar_anotacoes(user: User, pub_id):
+    """Lista todas as anotações de uma publicação."""
+    try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
+        if not pub:
+            click.echo(f"Publicação com ID {pub_id} não encontrada.", err=True)
+            return
+        
+        annotations = pub.list_annotations()
+
+        if not annotations:
+            click.echo(f"Nenhuma anotação encontrada para '{pub.title}'")
+            return
+        
+        click.echo(f"\n{'=' * 70}")
+        click.echo(f"ANOTAÇÕES - {pub.title}")
+        click.echo(f"{'=' * 70}\n")
+
+        for i, ann in enumerate(annotations, 1):
+            click.echo(f"[{i}] ID: {ann.id}")
+            click.echo(f"     Data: {ann.date}")
+
+            if ann.reference_excerpt:
+                click.echo(f"     Trecho: \"{ann.reference_excerpt[:60]}...\"")
+
+            click.echo(f"     Anotação: {ann.text}")
+            click.echo(f"     {'-' * 65}")
+
+        click.echo(f"Total: {len(annotations)} anotação(ões)\n")
+        
+    except Exception as e:
+        click.echo(f"Erro: {e}", err=True)
+
+@cli.command()
+@click.argument('pub_id', type=int)
+@click.argument('annotation_id')
+@click.pass_obj
+def remover_anotacao(user: User, pub_id, annotation_id):
+    """Remove uma anotação específica de uma publicação."""
+    try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
+        if not pub:
+            click.echo(f"Publicação com ID {pub_id} não encontrada.", err=True)
+            return
+        
+        annotations = pub.list_annotations()
+        annotation_exists = any(ann.id == annotation_id for ann in annotations)
+
+        if not annotation_exists:
+            click.echo(f"Anotação {annotation_id} não encontrada.", err=True)
+            return
+        
+        removed = pub.remove_annotation(annotation_id)
+
+        if removed:
+            repository.save_collection(user.collection)
+            click.echo(f"Anotação '{annotation_id}' removida com sucesso")
+        else:
+            click.echo(f"Não foi possível remover a anotação", err=True)
+
+    except Exception as e:
+        click.echo(f"Erro: {e}", err=True)
+
+@cli.command()
+@click.argument('pub_id', type=int)
+@click.argument('annotation_id')
+@click.pass_obj
+def ver_anotacao(user: User, pub_id, annotation_id):
+    """Exibe detalhes de uma anotação específica."""
+    try:
+        pubs = user.collection.list_publications()
+        pub = next((p for p in pubs if p.id == pub_id), None)
+
+        if not pub:
+            click.echo(f"Publicação com ID {pub_id} não encontrada.", err=True)
+            return
+        
+        annotations = pub.list_annotations()
+        annotation = next((ann for ann in annotations if ann.id == annotation_id), None)
+
+        if not annotation:
+            click.echo(f"Anotação {annotation_id} não encontrada.", err=True)
+            return
+        
+        click.echo(f"\n{'=' * 70}")
+        click.echo(f"DETALHES DA ANOTAÇÃO")
+        click.echo(f"{'=' * 70}\n")
+        click.echo(f"ID {annotation.id}")
+        click.echo(f"Publicação: {pub.title}")
+        click.echo(f"Data de criação: {annotation.date}")
+
+        if annotation.reference_excerpt:
+            click.echo("\nTrecho de Referência:")
+            click.echo(f"     \"{annotation.reference_excerpt}\"")
+
+        click.echo(f"\nAnotação:")
+        click.echo(f"     {annotation.text}")
+        click.echo(f"\n{'=' * 70}")
+
+    except Exception as e:
+        click.echo(f"Erro: {e}", err=True)
+
+@cli.command()
+@click.pass_obj
+def listar_todas_anotacoes(user: User):
+    """Lista todas as anotações de todas as publicações."""
+    try:
+        pubs = user.collection.list_publications()
+
+        if not pubs:
+            click.echo("Nenhuma publicação encontrada.")
+            return
+        
+        total_annotations = 0
+        has_annotation = False
+
+        click.echo(f"\n{'=' * 70}")
+        click.echo("TODAS AS ANOTAÇÕES")
+        click.echo(f"{'=' * 70}\n")
+
+        for pub in pubs:
+            annotations = pub.list_annotations()
+
+            if annotations:
+                has_annotation = True
+                total_annotations += len(annotations)
+
+                click.echo(f"{pub.title} ({len(annotations)} {"anotação" if len(annotations) == 1 else "anotações"})")
+                click.echo(f"    {'-' * 65}")
+
+                for ann in annotations:
+                    click.echo(f"    [{ann.id}] {ann.date}")
+                    if ann.reference_excerpt:
+                        click.echo(f"     Trecho: \"{ann.reference_excerpt[:50]}...\"")
+                    click.echo(f"     {ann.text[:80]}...")
+                    click.echo()
+
+        if not has_annotation:
+            click.echo("Nenhuma anotação cadastrada.")
+        else:
+            click.echo(f"Total: {total_annotations} {"anotação" if total_annotations == 1 else "anotações"} em {len(pubs)} {"publicação" if len(pubs) == 1 else "publicações"}\n")
+
+    except Exception as e:
+        click.echo(f"Erro: {e}", err=True)
+
+@cli.command()
+@click.argument('termo')
+@click.pass_obj
+def buscar_anotacoes(user: User, termo):
+    """Busca anotações que contenham o termo especificado."""
+    try:
+        pubs = user.collection.list_publications()
+
+        if not pubs:
+            click.echo("Nenhuma publicação encontrada.")
+            return
+        
+        results = []
+        termo_lower = termo.lower()
+
+        for pub in pubs:
+            annotations = pub.list_annotations()
+            for ann in annotations:
+                if (termo_lower in ann.text.lower() or (ann.reference_excerpt and termo_lower in ann.reference_excerpt.lower())):
+                    results.append((pub, ann))
+
+        if not results:
+            click.echo(f"Nenhuma anotação encontrada com o termo '{termo}'")
+            return
+        
+        click.echo(f"\n{'=' * 70}")
+        click.echo(f"RESULTADOS DA BUSCA: '{termo}'")
+        click.echo(f"{'=' * 70}\n")
+        click.echo(f"Encontradas {len(results)} anotação(ões):\n")
+
+        for pub, ann in results:
+            click.echo(f"{pub.title}")
+            click.echo(f"     [{ann.id}] {ann.date}")
+            if ann.reference_excerpt:
+                click.echo(f"     Trecho: \"{ann.reference_excerpt[:50]}...\"")
+            click.echo(f"     Anotação: {ann.text}")
+            click.echo(f"     {'-' * 65}\n")
+
+    except Exception as e:
+        click.echo(f"Erro: {e}", err=True)
 
 
 if __name__ == '__main__':
