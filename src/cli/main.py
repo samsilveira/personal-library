@@ -83,8 +83,8 @@ def listar(user: User):
     
     click.echo(f"Total: {len(pubs)} publicações\n")
     for pub in pubs:
-        click.echo(f"   [{pub.id}] {pub.title} - {pub.author}")
-        click.echo(f"       Status: {pub.status} | Ano: {pub.year}")
+        click.echo(f"   [{pub.id:>3}] {pub.title} - {pub.author}")
+        click.echo(f"         Status: {pub.status:7} | Ano: {pub.year}")
         click.echo("")
 
 @cli.command()
@@ -98,7 +98,7 @@ def iniciar_leitura(user: User, pub_id):
 
         user.start_reading(pub_id)
         repository.save_collection(user.collection)
-        click.echo(f" [{pub.id}] {pub.title} - Leitura iniciada!")
+        click.echo(f" [{pub.id:>3}] {pub.title} - Leitura iniciada!")
     except ValueError as e:
         click.echo(f"Erro: {e}", err=True)
 
@@ -169,8 +169,8 @@ def buscar(user: User, termo, por):
     
     click.echo(f"Encontradas {len(results)} publicações:\n")
     for pub in results:
-        click.echo(f"   [{pub.id}] {pub.title} - {pub.author}")
-        click.echo(f"       {pub.status}")
+        click.echo(f"   [{pub.id:>3}] {pub.title} - {pub.author}")
+        click.echo(f"         {pub.status:7}")
 
 @cli.command()
 @click.argument('pub_id', type=int)
